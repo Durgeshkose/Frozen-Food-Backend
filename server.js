@@ -23,8 +23,8 @@ const PORT = process.env.PORT || 5000;
 // 🔐 CORS setup for localhost and Netlify frontend
 app.use(cors({
   origin: [
-    "http://localhost:5173", 
-    "https://frozenfood.netlify.app/"
+    "https://frozenfood.netlify.app",
+    "http://localhost:5173"
   ],
   credentials: true,
 }));
