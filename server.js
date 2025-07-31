@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: [
     "http://localhost:5173", 
-    "https://your-frontend.netlify.app"
+    "https://frozenfood.netlify.app/"
   ],
   credentials: true,
 }));
