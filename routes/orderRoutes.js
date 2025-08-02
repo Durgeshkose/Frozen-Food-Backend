@@ -1,21 +1,32 @@
 const express = require('express');
 const router = express.Router();
+
+// Controller ko import karein
 const orderController = require('../controllers/orderController');
-const authMiddleware = require('../middlewares/authMiddleware');
+
+// Middlewares ko import karein
+const { protect, admin } = require('../middlewares/authMiddleware');
+
+// =================================================================
+// =========== YEH SABSE ZAROORI BADLAV HAI ========================
+// Hum ab functions ko direct 'orderController' object se call karenge.
+// Isse koi bhi variable conflict ka chance nahi rahega.
+// =================================================================
 
 // Route to create a new order
-router.post('/', authMiddleware, orderController.createOrder);
+router.post('/', protect, orderController.createOrder);
 
-// Route to get all orders
-router.get('/', authMiddleware, orderController.getAllOrders);
+// Route for a logged-in user to get their own orders
+router.get('/myorders', protect, orderController.getMyOrders);
+
+// Route for an admin to get all orders from all users
+router.get('/', protect, admin, orderController.getAllOrders);
 
 // Route to get a specific order by ID
-router.get('/:id', authMiddleware, orderController.getOrderById);
+router.get('/:id', protect, orderController.getOrderById);
 
-// Route to update an order by ID
-router.put('/:id', authMiddleware, orderController.updateOrder);
+// Route for an admin to update an order's status
+router.put('/:id/status', protect, admin, orderController.updateOrderStatus);
 
-// Route to delete an order by ID
-router.delete('/:id', authMiddleware, orderController.deleteOrder);
 
 module.exports = router;
