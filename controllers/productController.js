@@ -25,15 +25,19 @@ const getProductById = async (req, res) => {
 // Create product (with image upload)
 const createProduct = async (req, res) => {
   try {
+    // ======================= FIX YAHAN HAI =======================
+    // Humne 'categoryName' ko 'category' se badal diya hai
+    // aur 'isAvailable' ko 'inStock' se, taaki frontend se match ho.
     const {
       name,
       description,
       price,
-      categoryName,
-      isAvailable,
+      category, // FIX: Changed from categoryName
+      inStock,  // FIX: Changed from isAvailable
       stock,
       image,
     } = req.body;
+    // =============================================================
 
     let imageUrl = image;
 
@@ -49,15 +53,17 @@ const createProduct = async (req, res) => {
       name,
       description,
       price,
-      category: categoryName,
+      category, // FIX: Ab yeh sahi se kaam karega
       stock,
       image: imageUrl,
-      inStock: isAvailable,
+      inStock, // FIX: Ab yeh bhi sahi se kaam karega
     });
 
     const saved = await newProduct.save();
     res.status(201).json(saved);
   } catch (err) {
+    // Behtar error logging
+    console.error("Error creating product:", err);
     res.status(400).json({ message: 'Failed to create product', error: err.message });
   }
 };
@@ -65,10 +71,13 @@ const createProduct = async (req, res) => {
 // Update product
 const updateProduct = async (req, res) => {
   try {
+    // Note: Update mein bhi yahi problem ho sakti hai, isliye isko bhi check karein.
+    // Abhi ke liye, hum assume kar rahe hain ki frontend se poora object aa raha hai.
     const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updated) return res.status(404).json({ message: 'Product not found' });
     res.json(updated);
   } catch (err) {
+    console.error("Error updating product:", err);
     res.status(400).json({ message: 'Failed to update product', error: err.message });
   }
 };
@@ -80,6 +89,7 @@ const deleteProduct = async (req, res) => {
     if (!deleted) return res.status(404).json({ message: 'Product not found' });
     res.json({ message: 'Product deleted successfully' });
   } catch (err) {
+    console.error("Error deleting product:", err);
     res.status(500).json({ message: 'Failed to delete product', error: err.message });
   }
 };

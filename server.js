@@ -29,9 +29,13 @@ app.use(cors({
   credentials: true,
 }));
 
-// Body parsers
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// ======================= FIX YAHAN HAI =======================
+// Body parsers with increased limit for large payloads (like base64 images)
+// Yeh server ko batayega ki bade JSON data ko kaise padhna hai.
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+// =============================================================
+
 
 // 🌐 Test route to check frontend-backend connection
 app.get('/api/test', (req, res) => {
