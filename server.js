@@ -11,6 +11,9 @@ const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
+const addressRoutes = require('./routes/addressRoutes');
+const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Middleware
 const errorMiddleware = require('./middlewares/errorMiddleware');
@@ -50,6 +53,9 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/payment-methods', paymentMethodRoutes);
+app.use('/api/notifications', notificationRoutes);
+
 
 // ❌ Error middleware (should be last)
 app.use(errorMiddleware);

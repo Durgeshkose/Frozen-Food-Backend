@@ -2,66 +2,77 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// GET PROFILE
+// ✅ GET /api/users/profile
 exports.getUserProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id).select('-password');
-        res.status(200).json(user);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching profile' });
+  try {
+    const user = await User.findById(req.user.id).select('-password'); // hide password
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
 };
 
-// UPDATE PROFILE
+// ✅ PUT /api/users/profile
 exports.updateUserProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id);
-        if (!user) return res.status(404).json({ message: 'User not found' });
+  try {
+    const { username, email } = req.body;
 
-        user.username = req.body.username || user.username;
-        user.email = req.body.email || user.email;
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { username, email, updatedAt: new Date() },
+      { new: true }
+    ).select('-password');
 
-        if (req.body.password) {
-            user.password = await bcrypt.hash(req.body.password, 10);
-        }
-
-        const updatedUser = await user.save();
-
-        res.status(200).json({
-            id: updatedUser._id,
-            username: updatedUser.username,
-            email: updatedUser.email,
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Update failed' });
-    }
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: 'Update failed', error });
+  }
 };
 
-// Optional: ADMIN/INTERNAL FUNCTIONS
+// ✅ GET All Users
 exports.getAllUsers = async (req, res) => {
+  try {
     const users = await User.find().select('-password');
     res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching users', error: err });
+  }
 };
 
+// ✅ GET Single User by ID
 exports.getUserById = async (req, res) => {
+  try {
     const user = await User.findById(req.params.id).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching user', error: err });
+  }
 };
 
+// ✅ UPDATE user by ID
 exports.updateUser = async (req, res) => {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    user.username = req.body.username || user.username;
-    user.email = req.body.email || user.email;
-
-    const updatedUser = await user.save();
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    ).select('-password');
     res.json(updatedUser);
+  } catch (err) {
+    res.status(500).json({ message: 'Update failed', error: err });
+  }
 };
 
+// ✅ DELETE User by ID
 exports.deleteUser = async (req, res) => {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json({ message: 'User deleted' });
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Delete failed', error: err });
+  }
 };

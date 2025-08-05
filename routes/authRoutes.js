@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 // User registration route
 router.post('/register', authController.register);
@@ -10,7 +10,7 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 // Get user profile route (protected)
-router.get('/profile', authMiddleware, authController.getProfile);
+router.get('/profile', protect, authController.getProfile);
 
 // Password reset route
 router.post('/reset-password', authController.resetPassword);
